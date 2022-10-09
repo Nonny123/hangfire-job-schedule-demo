@@ -78,4 +78,5 @@ C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\obj\Debug\net5.0\ref\hangfiredemo.dll
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\obj\Debug\net5.0\hangfiredemo.pdb
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\obj\Debug\net5.0\hangfiredemo.genruntimeconfig.cache
+C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\obj\Debug\net5.0\hangfiredemo.csproj.AssemblyReference.cache
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\obj\Debug\net5.0\hangfiredemo.csproj.CopyComplete

@@ -1,5 +1,6 @@
 using Hangfire;
 using Hangfire.SqlServer;
+using hangfiredemo.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,9 +33,15 @@ namespace hangfiredemo
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
+            
+            
             services.AddDbContext<ApplicationDbContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString(connectionString)));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+           
+            
+            
+            
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -42,7 +49,13 @@ namespace hangfiredemo
             });
 
 
-           
+
+
+            services.AddScoped<IPeopleRepository, PeopleRepository>();
+            services.AddTransient<ITimeService, TimeService>();
+
+
+
             //this will create the hangfiredb tables
             services.AddHangfire(configuration => configuration
                     .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
@@ -77,6 +90,10 @@ namespace hangfiredemo
             app.UseAuthorization();
 
             app.UseHangfireDashboard();
+
+            //RecurringJob.AddOrUpdate<ITimeService>("print-time", service => service.PrintNow(),Cron.Minutely);
+
+            RecurringJob.AddOrUpdate<IPeopleRepository>("deploy-survey", r => r.DeploySurvey(null), "*/5 * * * *");
 
             app.UseEndpoints(endpoints =>
             {

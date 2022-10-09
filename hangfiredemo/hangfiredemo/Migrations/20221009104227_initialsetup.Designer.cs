@@ -9,7 +9,7 @@ using hangfiredemo;
 namespace hangfiredemo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221008155335_initialsetup")]
+    [Migration("20221009104227_initialsetup")]
     partial class initialsetup
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
