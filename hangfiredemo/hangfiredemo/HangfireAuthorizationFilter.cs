@@ -14,6 +14,7 @@ namespace hangfiredemo
 
             // Allow all authenticated users to see the Dashboard (potentially dangerous).
             return httpContext.User.Identity.IsAuthenticated;
+            //return true;
         }
     }
 }

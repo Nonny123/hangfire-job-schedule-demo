@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.SqlServer;
 using hangfiredemo.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -44,7 +45,12 @@ namespace hangfiredemo
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
-
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+                {
+                    options.SlidingExpiration = true;
+                    options.ExpireTimeSpan = new TimeSpan(0, 1, 0);
+                });
 
 
             services.AddControllers();
