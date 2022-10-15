@@ -4,6 +4,7 @@ using hangfiredemo.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -38,10 +39,14 @@ namespace hangfiredemo
             services.AddDbContext<ApplicationDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-           
-            
-            
-            
+
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+
+
+
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -89,11 +94,14 @@ namespace hangfiredemo
 
             app.UseAuthorization();
 
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                Authorization = new[] { new HangfireAuthorizationFilter() }
+            });
 
             //RecurringJob.AddOrUpdate<ITimeService>("print-time", service => service.PrintNow(),Cron.Minutely);
 
-            RecurringJob.AddOrUpdate<IPeopleRepository>("deploy-survey", r => r.DeploySurvey(null), "*/5 * * * *");
+            //RecurringJob.AddOrUpdate<IPeopleRepository>("deploy-survey", r => r.DeploySurvey(null), "*/5 * * * *");
 
             app.UseEndpoints(endpoints =>
             {
