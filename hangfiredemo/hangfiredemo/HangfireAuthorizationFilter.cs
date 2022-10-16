@@ -11,16 +11,9 @@ namespace hangfiredemo
 {
     public class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
     {
-        //public bool Authorize(DashboardContext context)
-        //{
-        //    var httpContext = context.GetHttpContext();
+      
 
-        //    // Allow all authenticated users to see the Dashboard (potentially dangerous).
-        //    return httpContext.User.Identity.IsAuthenticated;
-        //    //return true;
-        //}
-
-
+        //private static Logger logger = LogManager.GetCurrentClassLogger();
         private static readonly string HangFireCookieName = "HangFireCookie";
         private static readonly int CookieExpirationMinutes = 60;
         private TokenValidationParameters tokenValidationParameters;
@@ -60,15 +53,18 @@ namespace hangfiredemo
                 SecurityToken validatedToken = null;
                 JwtSecurityTokenHandler hand = new JwtSecurityTokenHandler();
                 var claims = hand.ValidateToken(access_token, this.tokenValidationParameters, out validatedToken);
-                //if (!String.IsNullOrEmpty(this.role) && !claims.IsInRole(this.role))
-                //{
-                //    return false;
-                //}
+                if (String.IsNullOrEmpty(this.role) && !claims.IsInRole(this.role))
+                {
+                    return false;
+                }
             }
             catch (Exception e)
             {
-                //logger.Error(e, "Error during dashboard hangfire jwt validation process");
+                //logger.Error(e, "Error - Invalid jwt token/validation process");
+                System.Diagnostics.Debug.WriteLine(e + "-" + "Error - Invalid jwt token / validation process");
                 throw e;
+                
+                
             }
 
             if (setCookie)
