@@ -83,4 +83,4 @@ C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\bin\Debug\net5.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\bin\Debug\net5.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\bin\Debug\net5.0\Microsoft.Extensions.Identity.Stores.dll
-C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\obj\Debug\net5.0\hangfiredemo.csproj.CopyComplete
+C:\Users\NONSO\source\repos\hangfire-job-schedule-demo\hangfiredemo\hangfiredemo\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

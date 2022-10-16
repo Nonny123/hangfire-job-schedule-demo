@@ -14,10 +14,10 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using hangfiredemo.Repository;
 
 namespace hangfiredemo
 {
@@ -41,17 +41,40 @@ namespace hangfiredemo
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
 
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            //    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+            //    {
+            //        options.SlidingExpiration = true;
+            //        options.ExpireTimeSpan = new TimeSpan(0, 1, 0);
+            //    });
+
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                var Key = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
+                o.SaveToken = true;
+                o.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.SlidingExpiration = true;
-                    options.ExpireTimeSpan = new TimeSpan(0, 1, 0);
-                });
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = false,
+                    ValidIssuer = Configuration["JWT:Issuer"],
+                    ValidAudience = Configuration["JWT:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Key)
+                };
+            });
 
+            //services.AddDistributedMemoryCache();
+            //services.AddSession();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -65,7 +88,7 @@ namespace hangfiredemo
             services.AddScoped<IPeopleRepository, PeopleRepository>();
             services.AddTransient<ITimeService, TimeService>();
 
-
+            services.AddSingleton<IJWTManagerRepository, JWTManagerRepository>();
 
             //this will create the hangfiredb tables
             services.AddHangfire(configuration => configuration
@@ -81,6 +104,7 @@ namespace hangfiredemo
                         DisableGlobalLocks = true
                     }));
 
+
             services.AddHangfireServer();
         }
 
@@ -89,21 +113,51 @@ namespace hangfiredemo
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "hangfiredemo v1"));
             }
 
-            app.UseHttpsRedirection();
+           
+           
 
+            app.UseHttpsRedirection();
             app.UseRouting();
+
+            app.UseAuthentication();
+
+           
 
             app.UseAuthorization();
 
+            //app.UseSession();
+
+            var Key = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = false,
+                ValidIssuer = Configuration["JWT:Issuer"],
+                ValidAudience = Configuration["JWT:Audience"],
+
+                IssuerSigningKey = new SymmetricSecurityKey(Key)
+            };
+
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-                Authorization = new[] { new HangfireAuthorizationFilter() }
+                Authorization = new[] { new HangfireAuthorizationFilter(tokenValidationParameters, "Admin") }
+                
             });
+
+            //app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            //{
+            //    Authorization = new[] { new HangfireAuthorizationFilter()}
+            //    //IgnoreAntiforgeryToken = true
+            //});
+
+
 
             //RecurringJob.AddOrUpdate<ITimeService>("print-time", service => service.PrintNow(),Cron.Minutely);
 
