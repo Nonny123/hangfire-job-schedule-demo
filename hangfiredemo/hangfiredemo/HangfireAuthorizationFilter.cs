@@ -62,6 +62,7 @@ namespace hangfiredemo
             {
                 //logger.Error(e, "Error - Invalid jwt token/validation process");
                 System.Diagnostics.Debug.WriteLine(e + "-" + "Error - Invalid jwt token / validation process");
+                //the method that calls this method(Authorize method) should handle the exception 
                 throw e;
                 
                 
